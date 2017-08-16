@@ -20,6 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 import java.time.LocalDate
 import utils.ImplicitDateFormatter._
 import play.api.Logger
+import utils.DateFactory._
 
 case class IncomeSourcesModel(
                               businessDetails: Option[BusinessIncomeModel],
@@ -44,13 +45,13 @@ case class IncomeSourcesModel(
 
   val earliestAccountingPeriodStart: Int => Option[LocalDate] = taxYear => (hasBusinessIncome, hasPropertyIncome) match {
     case (true, true) =>
-      if(propertyDetails.get.accountingPeriod.determineTaxYear == taxYear) Some(s"${taxYear-1}-4-6".toLocalDate)
+      if(propertyDetails.get.accountingPeriod.determineTaxYear == taxYear) Some(taxYearStart(taxYear - 1))
       else if(businessDetails.get.accountingPeriod.determineTaxYear == taxYear) Some(businessDetails.get.accountingPeriod.start)
       else {
         Logger.error(s"[IncomeSourcesModel][earliestAccountingPeriodStart] - Neither income source matched taxYear: $taxYear")
         None}
     case (_,true) =>
-      if(propertyDetails.get.accountingPeriod.determineTaxYear == taxYear) Some(s"${taxYear-1}-4-6".toLocalDate)
+      if(propertyDetails.get.accountingPeriod.determineTaxYear == taxYear) Some(taxYearStart(taxYear - 1))
       else {
         Logger.warn(s"[IncomeSourcesModel][earliestAccountingPeriodStart] - Property income source did not match taxYear: $taxYear")
         None}

@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
 import java.time.LocalDate
 
-import utils.DateFactory._
-import play.api.libs.json.{Json, OFormat}
+import utils.ImplicitDateFormatter._
 
-
-case class AccountingPeriodModel(start: LocalDate, end: LocalDate) {
-  val determineTaxYear: Int = if(end isBefore taxYearStart(end.getYear))
-    end.getYear
-  else
-    end.getYear + 1
+trait DateFactory {
+  def taxYearStart(year: Int): LocalDate  = s"$year-4-6".toLocalDate
 }
 
-object AccountingPeriodModel {
-  implicit val format: OFormat[AccountingPeriodModel] = Json.format[AccountingPeriodModel]
-}
+object DateFactory extends DateFactory
